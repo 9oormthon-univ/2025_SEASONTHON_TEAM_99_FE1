@@ -84,13 +84,37 @@ function PostDetailPage() {
   return (
     <div className={styles.pageContainer}>
       <div className={styles.mainContent}>
-        {/* 게시글 */}
         <div className={styles.policydetail}>
           <div className={styles.title}>
             <h1>{post.title}</h1>
             <div className={styles.titleMeta}>
-              <span>{post.regionName}</span>
-              <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+              <div className={styles.location}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                >
+                  <path
+                    d="M10 16.6668C12.5 14.0002 15 11.6123 15 8.66683C15 5.72131 12.7614 3.3335 10 3.3335C7.23858 3.3335 5 5.72131 5 8.66683C5 11.6123 7.5 14.0002 10 16.6668Z"
+                    stroke="#F5F5F5"
+                    stroke-width="1.66667"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <circle
+                    cx="9.99992"
+                    cy="8.33317"
+                    r="1.66667"
+                    fill="#F5F5F5"
+                  />
+                </svg>
+                <span>{post.regionName}</span>
+              </div>
+              <div className={styles.date}>
+                {new Date(post.createdAt).toLocaleDateString()}
+              </div>
             </div>
           </div>
 
@@ -109,37 +133,43 @@ function PostDetailPage() {
                 ))}
               </div>
             )}
+            {vote && (
+              <>
+                <div className={styles.voteTitle}>투표</div>
+                <div className={styles.voteBox}>
+                  <h3 className={styles.voteQuestion}>{vote.question}</h3>
+                  <div className={styles.voteOptions}>
+                    {vote.options.map((opt) => (
+                      <label key={opt.optionId} className={styles.voteOption}>
+                        <input
+                          type={vote.multipleChoice ? "checkbox" : "radio"}
+                          name="vote"
+                          checked={selectedOptions.includes(opt.optionId)}
+                          onChange={() => handleVoteChange(opt.optionId)}
+                          className={styles.voteInput}
+                        />
+                        <span>{opt.optionText}</span>
+                        <span className={styles.voteCount}>
+                          {opt.voteCount}표
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                  <button
+                    className={styles.voteButton}
+                    onClick={handleVoteSubmit}
+                  >
+                    투표하기
+                  </button>
+                </div>
+              </>
+            )}
           </div>
+
           <hr />
         </div>
 
         {/* ✅ 투표 (vote가 존재할 때만 보이게) */}
-        {vote && (
-          <>
-            <div className={styles.voteTitle}>투표</div>
-            <div className={styles.voteBox}>
-              <h3 className={styles.voteQuestion}>{vote.question}</h3>
-              <div className={styles.voteOptions}>
-                {vote.options.map((opt) => (
-                  <label key={opt.optionId} className={styles.voteOption}>
-                    <input
-                      type={vote.multipleChoice ? "checkbox" : "radio"}
-                      name="vote"
-                      checked={selectedOptions.includes(opt.optionId)}
-                      onChange={() => handleVoteChange(opt.optionId)}
-                      className={styles.voteInput}
-                    />
-                    <span>{opt.optionText}</span>
-                    <span className={styles.voteCount}>{opt.voteCount}표</span>
-                  </label>
-                ))}
-              </div>
-              <button className={styles.voteButton} onClick={handleVoteSubmit}>
-                투표하기
-              </button>
-            </div>
-          </>
-        )}
 
         {/* 댓글 */}
         <CommentsSection type="post" id={postId} />
