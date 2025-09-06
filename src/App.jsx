@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import "./App.css"; // CSS 모듈 import
+import "./App.css";
 
 import Header from "./components/Header";
 import LoginPage from "./pages/LoginPage/LoginPage";
