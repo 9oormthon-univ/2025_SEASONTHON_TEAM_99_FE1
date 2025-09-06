@@ -73,12 +73,12 @@ function PostDetailPage() {
             <div className={styles.content}>{post.content}</div>
             <div>
               {/* TODO : 이미지를 조회 api에서 제공 안 하고 있음 */}
-              {post.images &&
-                post.images.map((image, index) => (
+              {post.postImages &&
+                post.postImages.map((image, index) => (
                   <img
-                    key={index}
-                    src={image}
-                    alt={`post image ${index + 1}`}
+                    key={index.id || index}
+                    src={image.imageUrl}
+                    alt={image.originalName || `post image ${index + 1}`}
                   />
                 ))}
             </div>
