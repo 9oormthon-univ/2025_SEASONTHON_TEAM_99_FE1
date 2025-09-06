@@ -12,7 +12,7 @@ function PostItem({ post }) {
     return null;
   }
 
-  const formattedDate = post.createdAt.split("T")[0];
+  const formattedDate = post.createdAt.split("T")[0].replace(/-/g, ".");
 
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [isLiked, setIsLiked] = useState(false);
