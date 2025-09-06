@@ -5,10 +5,11 @@ import { useAuth } from "../../context/AuthContext";
 import CustomDropdown from "../../components/CustomDropdown";
 import styles from "./NewPost.module.css";
 
+import CalIcon from "../../assets/cal.svg"; // 📅 달력 아이콘
+
 const MAX_IMAGES = 3;
 
 const REGION_OPTIONS_FOR_NEW_POST = [
-  // ... (지역 옵션은 기존과 동일)
   { value: "", label: "전체지역" },
   { value: 1, label: "서울특별시" },
   { value: 2, label: "부산광역시" },
@@ -38,10 +39,16 @@ function NewPostPage() {
   const [regionId, setRegionId] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(true);
 
-  // 단일 파일에서 파일 배열로 상태 변경
   const [imageFile, setImageFile] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const fileInputRef = useRef(null);
+
+  // ✅ 투표 관련 상태
+  const [showVote, setShowVote] = useState(false);
+  const [voteQuestion, setVoteQuestion] = useState("");
+  const [voteOptions, setVoteOptions] = useState(["", ""]);
+  const [multipleChoice, setMultipleChoice] = useState(false);
+  const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
     if (!user) {
@@ -89,6 +96,26 @@ function NewPostPage() {
     }
   };
 
+  // ✅ 투표 관련 핸들러
+  const handleAddOption = () => {
+    if (voteOptions.length >= 5) {
+      alert("항목은 최대 5개까지 추가할 수 있습니다.");
+      return;
+    }
+    setVoteOptions([...voteOptions, ""]);
+  };
+
+  const handleOptionChange = (index, value) => {
+    const updated = [...voteOptions];
+    updated[index] = value;
+    setVoteOptions(updated);
+  };
+
+  // ✅ 항목 삭제 핸들러
+  const handleRemoveOption = (indexToRemove) => {
+    setVoteOptions((prev) => prev.filter((_, index) => index !== indexToRemove));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title || !regionId || !content) {
@@ -108,8 +135,16 @@ function NewPostPage() {
       });
     }
 
+    // ✅ 투표 정보 추가
+    if (showVote && voteQuestion && voteOptions.some((opt) => opt.trim() !== "")) {
+      formData.append("question", voteQuestion);
+      voteOptions.forEach((opt) => formData.append("options", opt));
+      if (endDate) formData.append("endDate", endDate + " 23:59:59");
+      formData.append("multipleChoice", multipleChoice);
+    }
+
     try {
-      const response = await axiosInstance.post("/posts/new", formData, {
+      await axiosInstance.post("/posts/new", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       navigate("/community");
@@ -126,13 +161,25 @@ function NewPostPage() {
   return (
     <div className={styles.container}>
       <form onSubmit={handleSubmit} className={styles.formContainer}>
-        {/* ... (제목, 지역, 내용 input 그룹은 기존과 동일) ... */}
+        {/* ✅ 익명여부 */}
         <div className={styles.inputGroup}>
-                   {" "}
+          <label className={styles.label}>익명여부</label>
+          <div className={styles.checkboxGroup}>
+            <input
+              type="checkbox"
+              id="anonymous"
+              checked={isAnonymous}
+              onChange={(e) => setIsAnonymous(e.target.checked)}
+            />
+            <label htmlFor="anonymous">익명</label>
+          </div>
+        </div>
+
+        {/* 제목 */}
+        <div className={styles.inputGroup}>
           <label htmlFor="title" className={styles.label}>
-                        제목          {" "}
+            제목
           </label>
-                   {" "}
           <input
             id="title"
             type="text"
@@ -142,33 +189,27 @@ function NewPostPage() {
             className={styles.input}
             style={{ height: "82px" }}
           />
-                 {" "}
         </div>
-               {" "}
+
+        {/* 지역 */}
         <div className={styles.inputGroup}>
-                   {" "}
           <label htmlFor="region" className={styles.label}>
-                        지역          {" "}
+            지역
           </label>
-                   {" "}
           <div className={styles.dropdownContainer}>
-                       {" "}
             <CustomDropdown
               options={REGION_OPTIONS_FOR_NEW_POST}
               currentRegion={regionId}
               onRegionChange={handleRegionChange}
             />
-                     {" "}
           </div>
-                 {" "}
         </div>
-               {" "}
+
+        {/* 본문 */}
         <div className={styles.inputGroup}>
-                   {" "}
           <label htmlFor="content" className={styles.label}>
-                        내용          {" "}
+            내용
           </label>
-                   {" "}
           <textarea
             id="content"
             placeholder="청년 정책과 관련된 경험이나 정보를 공유해보세요."
@@ -176,12 +217,12 @@ function NewPostPage() {
             onChange={(e) => setContent(e.target.value)}
             className={styles.textarea}
           />
-                 {" "}
         </div>
+
+        {/* 사진 */}
         <div className={styles.inputGroup}>
           <label className={styles.label}>사진</label>
           <div className={styles.imageSection}>
-            {/* 선택된 이미지 미리보기 렌더링 */}
             {imagePreviews.map((preview, index) => (
               <div key={index} className={styles.imagePreviewContainer}>
                 <img
@@ -199,48 +240,14 @@ function NewPostPage() {
               </div>
             ))}
 
-            {/* 이미지가 3장 미만일 때만 업로드 버튼 표시 */}
             {imageFile.length < MAX_IMAGES && (
               <button
                 type="button"
                 onClick={handleImageUploadClick}
                 className={styles.imageUploadButton}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                >
-                  <path
-                    d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
-                    stroke="#999999"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <polyline
-                    points="17 8 12 3 7 8"
-                    stroke="#999999"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <line
-                    x1="12"
-                    y1="3"
-                    x2="12"
-                    y2="15"
-                    stroke="#999999"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
                 <span>
-                  사진 추가하기
-                  <br />({imageFile.length}/{MAX_IMAGES})
+                  사진 추가하기<br />({imageFile.length}/{MAX_IMAGES})
                 </span>
               </button>
             )}
@@ -254,15 +261,92 @@ function NewPostPage() {
             style={{ display: "none" }}
           />
         </div>
-        <div className={styles.checkboxGroup}>
-          <input
-            type="checkbox"
-            id="anonymous"
-            checked={isAnonymous}
-            onChange={(e) => setIsAnonymous(e.target.checked)}
-          />
-          <label htmlFor="anonymous">익명</label>
+
+        {/* ✅ 투표 */}
+        <div className={styles.voteSection}>
+          <h3>투표</h3>
+
+          {!showVote ? (
+            <button
+              type="button"
+              className={styles.voteAddButton}
+              onClick={() => setShowVote(true)}
+            >
+              추가하기 +
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                className={styles.voteCancelButton}
+                onClick={() => setShowVote(false)}
+              >
+                취소하기
+              </button>
+
+              <input
+                type="text"
+                placeholder="투표 제목을 입력하세요"
+                className={styles.voteInput}
+                value={voteQuestion}
+                onChange={(e) => setVoteQuestion(e.target.value)}
+              />
+
+              {voteOptions.map((opt, idx) => (
+                <div key={idx} className={styles.voteOptionWrapper}>
+                  <input
+                    type="text"
+                    placeholder="항목을 입력하세요"
+                    className={styles.voteInput}
+                    value={opt}
+                    onChange={(e) => handleOptionChange(idx, e.target.value)}
+                  />
+                  {voteOptions.length > 2 && (
+                    <button
+                      type="button"
+                      className={styles.removeOptionButton}
+                      onClick={() => handleRemoveOption(idx)}
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              ))}
+
+              <button
+                type="button"
+                className={styles.voteOptionAdd}
+                onClick={handleAddOption}
+              >
+                항목추가 +
+              </button>
+
+              <div className={styles.voteOptions}>
+                <label className={styles.voteCheckbox}>
+                  <input
+                    type="checkbox"
+                    checked={multipleChoice}
+                    onChange={(e) => setMultipleChoice(e.target.checked)}
+                  />
+                  복수선택
+                </label>
+
+                <div className={styles.voteDateWrapper}>
+                  <img src={CalIcon} alt="달력" />
+                  <span>마감 날짜</span>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className={styles.voteDateInput}
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </div>
+
+        {/* 버튼 */}
         <div className={styles.buttonGroup}>
           <button
             type="button"
@@ -272,7 +356,7 @@ function NewPostPage() {
             취소
           </button>
           <button type="submit" className={styles.submitButton}>
-            발행
+            글 발행하기
           </button>
         </div>
       </form>
