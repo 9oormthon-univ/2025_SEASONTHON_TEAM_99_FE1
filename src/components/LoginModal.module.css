@@ -1,0 +1,89 @@
+/* Pretendard 폰트가 전역으로 import 되어 있다고 가정합니다. */
+
+/* 팝업 뒷배경 (화면 전체를 덮는 반투명 레이어) */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* 다른 요소들보다 위에 오도록 설정 */
+}
+
+/* 실제 팝업창 컨테이너 */
+.modalContainer {
+  position: relative;
+  background-color: white;
+  padding: 32px 24px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px; /* 내부 요소들 간의 간격 */
+  box-sizing: border-box;
+}
+
+/* 닫기 (X) 버튼 */
+.closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #868e96;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+/* "로그인이 필요한 서비스입니다." 텍스트 부분 */
+.modalContent {
+  color: #212529;
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 16px; /* 닫기 버튼과의 간격 확보 */
+}
+
+/* 하단 버튼 그룹 */
+.buttonGroup {
+  display: flex;
+  width: 100%;
+  gap: 12px;
+}
+
+/* 버튼 공통 스타일 */
+.button {
+  flex: 1; /* 버튼이 공간을 균등하게 차지하도록 함 */
+  padding: 14px 0;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.button:hover {
+  opacity: 0.9;
+}
+
+/* 뒤로가기 버튼 스타일 */
+.cancelButton {
+  background-color: #f1f3f5;
+  color: #495057;
+  border: 1px solid #dee2e6;
+}
+
+/* 로그인 버튼 스타일 */
+.confirmButton {
+  background-color: #0c1c56; /* 웹사이트의 메인 컬러로 추정 */
+  color: white;
+}

@@ -41,7 +41,7 @@ function PolicyItem({ policy }) {
       }
     } catch (err) {
       console.error("좋아요 처리 실패:", err.response);
-      alert(err.response?.data?.message || "좋아요 처리에 실패했습니다.");
+      alert("로그인이 필요한 서비스입니다.");
     }
   };
 
