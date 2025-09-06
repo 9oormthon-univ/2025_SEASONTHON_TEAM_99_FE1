@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "./CommunityPage.module.css";
 import PostItem from "./PostItem";
 import plusIconUrl from "../../assets/plus.svg";
@@ -8,49 +8,20 @@ import refreshIconUrl from "../../assets/redirect.svg";
 import axiosInstance from "../../api/axiosInstance";
 
 const CalIcon = ({ isActive }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    fill="none"
-  >
-    <path
-      d="M16.6668 5.83325H3.3335V16.6666H16.6668V5.83325Z"
-      stroke={isActive ? "#FFFFFF" : "#505050"}
-      strokeWidth="1.25"
-    />
-    <path
-      d="M16.6668 5.83325H3.3335V9.99992H16.6668V5.83325Z"
-      stroke={isActive ? "#FFFFFF" : "#505050"}
-      strokeWidth="1.25"
-    />
-    <path
-      d="M5.8335 3.33325V5.83325"
-      stroke={isActive ? "#FFFFFF" : "#505050"}
-      strokeWidth="1.25"
-    />
-    <path
-      d="M14.1665 3.33325V5.83325"
-      stroke={isActive ? "#FFFFFF" : "#505050"}
-      strokeWidth="1.25"
-    />
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <path d="M16.6668 5.83325H3.3335V16.6666H16.6668V5.83325Z"
+      stroke={isActive ? "#4b3a3aff" : "#505050"} strokeWidth="1.25" />
+    <path d="M16.6668 5.83325H3.3335V9.99992H16.6668V5.83325Z"
+      stroke={isActive ? "#FFFFFF" : "#505050"} strokeWidth="1.25" />
+    <path d="M5.8335 3.33325V5.83325" stroke={isActive ? "#FFFFFF" : "#505050"} strokeWidth="1.25" />
+    <path d="M14.1665 3.33325V5.83325" stroke={isActive ? "#FFFFFF" : "#505050"} strokeWidth="1.25" />
   </svg>
 );
+
 const HeartIcon = ({ isActive }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    fill="none"
-  >
-    <path
-      d="M10 16.6667L3.71974 10.806C2.09342 9.28753 2.09342 6.82411 3.71974 5.30562C5.34605 3.78712 7.98684 3.78712 9.61316 5.30562L10 5.66594L10.3868 5.30562C12.0132 3.78712 14.6539 3.78712 16.2803 5.30562C17.9066 6.82411 17.9066 9.28753 16.2803 10.806L10 16.6667Z"
-      stroke={isActive ? "#FFFFFF" : "#505050"}
-      strokeWidth="1.25"
-      fill="none"
-    />
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <path d="M10 16.6667L3.71974 10.806C2.09342 9.28753 2.09342 6.82411 3.71974 5.30562C5.34605 3.78712 7.98684 3.78712 9.61316 5.30562L10 5.66594L10.3868 5.30562C12.0132 3.78712 14.6539 3.78712 16.2803 5.30562C17.9066 6.82411 17.9066 9.28753 16.2803 10.806L10 16.6667Z"
+      stroke={isActive ? "#FFFFFF" : "#505050"} strokeWidth="1.25" fill="none" />
   </svg>
 );
 
@@ -80,6 +51,7 @@ const INITIAL_FILTERS = { region: 0, sort: "최신순" };
 function CommunityPage() {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
+  const [pageInfo, setPageInfo] = useState({ totalPages: 1, pageNumber: 1 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -94,7 +66,8 @@ function CommunityPage() {
 
         let response;
         const params = {
-          page: currentPage,
+          page: currentPage - 1, // ⚡ Spring은 0부터 시작
+          size: 10
         };
 
         if (filters.sort === "좋아요순") {
@@ -103,19 +76,19 @@ function CommunityPage() {
           if (filters.region === 0) {
             response = await axiosInstance.get("/posts/list", { params });
           } else {
-            response = await axiosInstance.get(
-              `/posts/region/${filters.region}`,
-              { params }
-            );
+            response = await axiosInstance.get(`/posts/region/${filters.region}`, { params });
           }
         }
 
         if (response.data && response.data.isSuccess) {
-          setPosts(response.data.result);
+          const result = response.data.result;
+          setPosts(result.content); // ⚡ content만 꺼냄
+          setPageInfo({
+            totalPages: result.totalPages,
+            pageNumber: result.pageable.pageNumber + 1
+          });
         } else {
-          throw new Error(
-            response.data.message || "데이터를 불러오는 데 실패했습니다."
-          );
+          throw new Error(response.data.message || "데이터를 불러오는 데 실패했습니다.");
         }
       } catch (err) {
         setError(err);
@@ -181,32 +154,22 @@ function CommunityPage() {
                 onRegionChange={handleRegionChange}
               />
             </div>
-            <button
-              className={styles.resetButton}
-              aria-label="필터 초기화"
-              onClick={handleReset}
-            >
+            <button className={styles.resetButton} aria-label="필터 초기화" onClick={handleReset}>
               <img src={refreshIconUrl} alt="필터 초기화" />
             </button>
           </div>
           <div className={styles.sortItem}>
             <button
-              className={`${styles.sortButton} ${
-                filters.sort === "최신순" ? styles.active : ""
-              }`}
+              className={`${styles.sortButton} ${filters.sort === "최신순" ? styles.active : ""}`}
               onClick={() => handleSortChange("최신순")}
             >
-              <CalIcon isActive={filters.sort === "최신순"} />
-              최신순
+              <CalIcon isActive={filters.sort === "최신순"} /> 최신순
             </button>
             <button
-              className={`${styles.sortButton} ${
-                filters.sort === "좋아요순" ? styles.active : ""
-              }`}
+              className={`${styles.sortButton} ${filters.sort === "좋아요순" ? styles.active : ""}`}
               onClick={() => handleSortChange("좋아요순")}
             >
-              <HeartIcon isActive={filters.sort === "좋아요순"} />
-              좋아요순
+              <HeartIcon isActive={filters.sort === "좋아요순"} /> 좋아요순
             </button>
           </div>
         </div>
@@ -218,9 +181,47 @@ function CommunityPage() {
             <p className={styles.noPosts}>선택한 지역에 게시글이 없습니다.</p>
           )}
         </div>
+
+        {/* 페이지네이션 */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={pageInfo.totalPages}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
       </div>
     </div>
   );
 }
+
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  const maxPageButtons = 10;
+  const startPage = Math.floor((currentPage - 1) / maxPageButtons) * maxPageButtons + 1;
+  const endPage = Math.min(startPage + maxPageButtons - 1, totalPages);
+
+  const pages = [];
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i);
+  }
+
+  return (
+    <div className={styles.pagination}>
+      <button disabled={currentPage <= 1} onClick={() => onPageChange(1)}>{"<<"}</button>
+      <button disabled={currentPage <= 1} onClick={() => onPageChange(currentPage - 1)}>{"<"}</button>
+
+      {pages.map((page) => (
+        <button
+          key={page}
+          className={page === currentPage ? styles.activePage : ""}
+          onClick={() => onPageChange(page)}
+        >
+          {page}
+        </button>
+      ))}
+
+      <button disabled={currentPage >= totalPages} onClick={() => onPageChange(currentPage + 1)}>{">"}</button>
+      <button disabled={currentPage >= totalPages} onClick={() => onPageChange(totalPages)}>{">>"}</button>
+    </div>
+  );
+};
 
 export default CommunityPage;

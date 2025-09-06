@@ -6,7 +6,30 @@
   flex-direction: column;
   margin-top: 80px;
 }
-
+.commentSummary {
+  display: flex;
+  width: 1280px;
+  padding: 40px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  border-radius: 14px;
+  border: 1px solid #0c1c56;
+  background: #0c1c56;
+  box-sizing: border-box;
+  color: white;
+  margin-top: 24px;
+}
+.commentSummary h3 {
+  color: #fff;
+  font-family: Pretendard;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px; /* 120% */
+  letter-spacing: -0.5px;
+  margin: 0;
+}
 .commentTitle {
   color: var(--Font-02_black, #111);
   font-family: Pretendard;
@@ -59,12 +82,6 @@
   height: 82px;
   resize: vertical;
   box-sizing: border-box;
-}
-
-.commentExtraArea {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
 }
 
 .commentFormArea button {
@@ -174,4 +191,72 @@ h2 {
   font-weight: 600;
   line-height: 20px; /* 125% */
   letter-spacing: -0.4px;
+}
+/* ... (기존 CommentSection.module.css 내용은 그대로 둡니다) ... */
+
+/* --- 👇 커스텀 체크박스를 위한 CSS 코드 추가 --- */
+
+/* '익명' 텍스트와 체크박스를 감싸는 컨테이너 */
+.isAnonymous {
+  display: flex;
+  align-items: center;
+}
+
+/* 실제 input checkbox는 보이지 않게 숨김 */
+.realCheckbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  cursor: pointer;
+}
+
+/* 사용자가 클릭할 영역이자, 텍스트와 가짜 체크박스를 포함하는 label */
+.customCheckboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 체크박스와 '익명' 텍스트 사이 간격 */
+  cursor: pointer;
+  color: var(--Font-05_Gray_Disabled, #999);
+  font-family: Pretendard;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px; /* 125% */
+  letter-spacing: -0.4px;
+}
+
+/* 눈에 보이는 네모난 체크박스 모양 */
+.customCheckbox {
+  width: 22px;
+  height: 22px;
+  background-color: #f1f3f5;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* 실제 체크박스가 체크되었을 때, 가짜 체크박스의 스타일 변경 */
+.customCheckbox.checked {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+}
+
+/* 체크박스 안의 V 아이콘 SVG 스타일 */
+.customCheckbox svg path {
+  stroke: #495057; /* V 아이콘 색상 */
+  stroke-width: 3; /* V 아이콘 두께 */
+}
+
+/* 작성하기 버튼과 익명 체크박스 정렬 */
+.commentExtraArea {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  justify-content: flex-end; /* 양쪽 끝으로 정렬 */
+  align-items: center;
+  margin-top: 12px;
 }

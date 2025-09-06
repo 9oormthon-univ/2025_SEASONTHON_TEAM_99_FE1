@@ -50,6 +50,12 @@
 a {
   text-decoration: none;
 }
+.activeNavItem {
+  color: #0c1c56;
+  font-weight: 600;
+  border-bottom: 1px solid #0c1c56;
+  transition: all 0.2s ease-in-out;
+}
 @media (max-width: 768px) {
   .Header {
     border-bottom-width: 0px;
