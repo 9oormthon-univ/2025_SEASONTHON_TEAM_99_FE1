@@ -56,6 +56,31 @@ a {
   border-bottom: 1px solid #0c1c56;
   transition: all 0.2s ease-in-out;
 }
+.profileImage {
+  width: 32px;
+  height: 32px;
+  /* border-radius: 50%; */
+  object-fit: fill;
+  /* border: 1px solid #eee; */
+}
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logoutLink {
+  color: var(--Font-02_black, #111);
+
+  /* PC/Caption/KR/C3_KR_Rg */
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px; /* 145.455% */
+  letter-spacing: -0.275px;
+  padding: 5px 8px;
+  border-radius: 100px;
+  border: 1px solid var(--Line-Regular_Color, #e5e5ec);
+}
 @media (max-width: 768px) {
   .Header {
     border-bottom-width: 0px;

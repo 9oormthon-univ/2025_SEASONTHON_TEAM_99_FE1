@@ -48,11 +48,18 @@ function LoginPage() {
           },
         }
       );
-      console.log(response.data.accessToken);
-      console.log(response.data.nickname);
 
-      const accessToken = response.data.token.accessToken;
-      login(response.data.nickname, accessToken);
+      // console.log(response.data.accessToken);
+      // console.log(response.data.nickname);
+
+      const { nickname, profileImageUrl, token } = response.data;
+      const userData = {
+        nickname: nickname,
+        profileImageUrl: profileImageUrl,
+      };
+      const accessToken = token.accessToken;
+
+      login(userData, accessToken);
       console.log("로그인 성공:", response.data);
       alert("로그인에 성공했습니다!");
       navigate("/");

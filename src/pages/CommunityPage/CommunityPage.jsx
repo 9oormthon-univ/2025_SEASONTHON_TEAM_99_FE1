@@ -115,23 +115,18 @@ function CommunityPage() {
 
         if (response.data && response.data.isSuccess) {
           const result = response.data.result;
-          setPosts(result.content); // ⚡ content만 꺼냄
-          setPageInfo({
-            totalPages: result.totalPages,
-            pageNumber: result.pageable.pageNumber + 1,
-          });
-          
+
           if (result.content) {
             setPosts(result.content);
             setPageInfo({
               totalPages: result.totalPages,
-              pageNumber: result.pageable.pageNumber + 1
+              pageNumber: result.pageable.pageNumber + 1,
             });
           } else {
             setPosts(result);
             setPageInfo({
               totalPages: 1,
-              pageNumber: 1
+              pageNumber: 1,
             });
           }
         } else {

@@ -55,8 +55,13 @@ function Header() {
         <div className={styles.user}>
           {user ? (
             <div className={styles.userInfo}>
-              <span>{user}님</span>
-              <button onClick={handleLogout} className={styles.loginLink}>
+              <img
+                src={user.profileImageUrl}
+                alt="프로필 이미지"
+                className={styles.profileImage}
+              />
+              <span>{user.nickname}님</span>
+              <button onClick={handleLogout} className={styles.logoutLink}>
                 로그아웃
               </button>
             </div>
