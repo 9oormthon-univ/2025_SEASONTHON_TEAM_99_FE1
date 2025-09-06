@@ -7,6 +7,9 @@ import { useAuth } from "../context/AuthContext";
 function Header() {
   const location = useLocation();
   const { user, logout } = useAuth();
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <header className={styles.Header}>
@@ -51,11 +54,16 @@ function Header() {
 
         <div className={styles.user}>
           {user ? (
-            <div>
+            <div className={styles.userInfo}>
               <span>{user}님</span>
+              <button onClick={handleLogout} className={styles.loginLink}>
+                로그아웃
+              </button>
             </div>
           ) : (
-            <Link to="/login">로그인</Link>
+            <Link to="/login" className={styles.loginLink}>
+              로그인
+            </Link>
           )}
         </div>
       </div>

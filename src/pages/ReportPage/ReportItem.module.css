@@ -1,11 +1,17 @@
+.reportItemContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-sizing: content-box;
+}
 .reportItem {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   align-self: stretch;
-  flex-shrink: 0; /* 스크롤 시 아이템이 찌그러지지 않도록 설정 */
-  height: 400px; /* 아이템 높이 고정 */
+  flex-shrink: 0;
+  height: 400px;
   width: 230px;
   padding: 0 120px;
   border-radius: 8px;
@@ -44,6 +50,7 @@
   line-height: 24px; /* 100% */
   letter-spacing: -0.6px;
   margin-bottom: 8px;
+  text-align: left;
 }
 
 .publishDate {
@@ -54,4 +61,5 @@
   font-weight: 400;
   line-height: 20px; /* 111.111% */
   letter-spacing: -0.45px;
+  text-align: left;
 }

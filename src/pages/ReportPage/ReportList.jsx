@@ -12,7 +12,20 @@ function LeftArrow() {
       disabled={isFirstItemVisible}
       onClick={() => scrollPrev()}
     >
-      &lt;
+      {/* 왼쪽 화살표 SVG 아이콘 */}
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M15 18L9 12L15 6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
     </button>
   );
 }
@@ -25,7 +38,20 @@ function RightArrow() {
       disabled={isLastItemVisible}
       onClick={() => scrollNext()}
     >
-      &gt;
+      {/* 오른쪽 화살표 SVG 아이콘 */}
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M9 18L15 12L9 6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
     </button>
   );
 }
@@ -43,12 +69,10 @@ function ReportList({ groupedReports = {} }) {
         const [year, monthNum] = month.split("-");
         const monthTitle = `${year}년 ${parseInt(monthNum, 10)}월`;
 
-        // --- 👇 여기가 핵심입니다! ---
-        // ReportItem에 내려보내기 전에 데이터를 한 번 가공합니다.
         const reportsForMonth = groupedReports[month].map((report) => ({
           ...report,
-          id: report.reportId, // 1. reportId를 id로 복사
-          publishedDate: `${month}-01`, // 2. "YYYY-MM-DD" 형식의 publishedDate 생성
+          id: report.reportId,
+          publishedDate: `${month}-01`,
         }));
 
         return (
@@ -62,7 +86,7 @@ function ReportList({ groupedReports = {} }) {
                     <ReportItem
                       key={report.id}
                       itemId={String(report.id)}
-                      report={report} // 가공된 report 객체 전달
+                      report={report}
                     />
                   ))}
                 </ScrollMenu>

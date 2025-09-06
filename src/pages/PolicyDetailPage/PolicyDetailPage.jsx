@@ -37,42 +37,49 @@ const DetailCard = ({ icon, title, children }) => (
 
 // 심사 방법 파싱
 const ScreeningSteps = ({ screeningData }) => {
+  // 1. 파싱 로직은 그대로 유지합니다.
   const steps = useMemo(() => {
-    if (!screeningData) return [];
+    if (!screeningData || typeof screeningData !== "string") return [];
     return screeningData
       .split("\n")
       .map((line) => {
         const match = line.match(/^(\d+)\.\s*(.*?)\s*:\s*(.*)$/);
         if (match) {
           const [, number, title, content] = match;
-          return { number, title, content };
+          return { number, title, content: content.trim() }; // content 양 끝 공백 제거
         }
         return null;
       })
       .filter(Boolean);
   }, [screeningData]);
 
-  if (steps.length === 0) {
+  // 데이터가 아예 없는 경우 "등록된 정보 없음"을 표시합니다.
+  if (!screeningData || screeningData.trim() === "") {
     return <DisplayData data={screeningData} />;
-  } else if (steps.number.length != 0) {
+  }
+
+  // 2. 렌더링 로직을 명확하게 수정합니다.
+  if (steps.length > 0) {
+    // Case 1: 파싱 성공 시 (항목이 1개 이상일 때) -> 여러 카드를 Grid로 표시
     return (
       <div className={styles.gridContainer}>
         {steps.map((step) => (
           <DetailCard key={step.number} icon={step.number}>
             <p className={styles.gridTitle}>{step.title}</p>
-            <p>{step.content}</p>
+            <DisplayData data={step.content} />
           </DetailCard>
         ))}
       </div>
     );
   } else {
-    <DetailCard>
-      <p className={styles.gridTitle}>{step.title}</p>
-      <p>{step.content}</p>
-    </DetailCard>;
+    // Case 2: 파싱 실패 시 (일반 텍스트일 때) -> 하나의 DetailCard에 전체 텍스트를 표시
+    return (
+      <DetailCard>
+        <DisplayData data={screeningData} />
+      </DetailCard>
+    );
   }
 };
-
 function PolicyDetailPage() {
   const { policyName } = useParams();
   const location = useLocation();
@@ -285,9 +292,29 @@ function PolicyDetailPage() {
             <ScreeningSteps screeningData={policy.srngMthdCn} />
           </div>
         </section>
-        <p>
-          최초등록일 {policy.frstRegDt} 최종수정일 {policy.lastMdfcnDt}
-        </p>
+
+        <DetailCard>
+          <p className={styles.gridNTitle}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="29"
+              viewBox="0 0 28 29"
+              fill="none"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M13.9997 2.95001C7.6208 2.95001 2.44971 8.12112 2.44971 14.5C2.44971 20.8789 7.6208 26.05 13.9997 26.05C20.3785 26.05 25.5496 20.8789 25.5496 14.5C25.5496 8.12112 20.3785 2.95001 13.9997 2.95001ZM13.9997 5.05001C8.78059 5.05001 4.5497 9.28092 4.5497 14.5C4.5497 19.7191 8.78059 23.95 13.9997 23.95C19.2187 23.95 23.4496 19.7191 23.4496 14.5C23.4496 9.28092 19.2187 5.05001 13.9997 5.05001ZM12.833 9.83335C12.833 9.18901 13.3553 8.66668 13.9997 8.66668C14.644 8.66668 15.1663 9.18901 15.1663 9.83335C15.1663 10.4777 14.644 11 13.9997 11C13.3553 11 12.833 10.4777 12.833 9.83335ZM12.9497 12.75V20.3333H15.0497V12.75H12.9497Z"
+                fill="#767676"
+              />
+            </svg>
+            추가 정보
+          </p>
+          <p className={styles.moreinfo}>
+            최초등록일 {policy.frstRegDt} 최종수정일 {policy.lastMdfcnDt}
+          </p>
+        </DetailCard>
       </main>
       <CommentsSection
         type="policy"
