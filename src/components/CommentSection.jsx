@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import axiosInstance from "../api/axiosInstance";
 import styles from "./CommentSection.module.css";
@@ -37,14 +37,14 @@ function CommentItem({ comment, onLikeToggle, onUpdate, onDelete }) {
               {likeCount}
             </span>
           </button>
-          {isMyComment && (
+          {/* {isMyComment && (
             <div>
               <button onClick={() => onUpdate(commentId, comment.content)}>
                 수정
               </button>
               <button onClick={() => onDelete(commentId)}>삭제</button>
             </div>
-          )}
+          )} */}
         </div>
       </div>
       <p className={styles.commentItemContent}>{comment.content}</p>
@@ -52,6 +52,7 @@ function CommentItem({ comment, onLikeToggle, onUpdate, onDelete }) {
   );
 }
 
+// --- 댓글 섹션 메인 컴포넌트 ---
 function CommentsSection({ type, id, metadata }) {
   const { user } = useAuth();
   const [comments, setComments] = useState([]);
@@ -60,46 +61,46 @@ function CommentsSection({ type, id, metadata }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // AI 요약 및 로그인 모달 상태
   const [summary, setSummary] = useState("");
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [summaryError, setSummaryError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      if (!id) return;
-      try {
-        setLoading(true);
-        setError(null);
-        let response;
-        if (type === "policy") {
-          response = await axiosInstance.get("/youth/policies/reply-list", {
-            params: { plcyNo: id },
-          });
-        } else if (type === "post") {
-          response = await axiosInstance.get(`/posts/replies/${id}`);
-        }
-        if (response?.data?.isSuccess) {
-          setComments(response.data.result || []);
-        } else {
-          setComments([]);
-        }
-      } catch (err) {
-        console.error("댓글 로딩 실패:", err);
-        setError("댓글을 불러오는 중 오류가 발생했습니다.");
-      } finally {
-        setLoading(false);
+  const fetchComments = useCallback(async () => {
+    if (!id) return;
+    try {
+      setLoading(true);
+      setError(null);
+      let response;
+      if (type === "policy") {
+        response = await axiosInstance.get("/youth/policies/reply-list", {
+          params: { plcyNo: id },
+        });
+      } else if (type === "post") {
+        response = await axiosInstance.get(`/posts/replies/${id}`);
       }
-    };
+      if (response?.data?.isSuccess) {
+        setComments(response.data.result || []);
+      } else {
+        setComments([]);
+      }
+    } catch (err) {
+      console.error("댓글 로딩 실패:", err);
+      setError("댓글을 불러오는 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  }, [id, type]);
 
+  useEffect(() => {
     fetchComments();
     return () => {
       setSummary("");
       setSummaryError(null);
     };
-  }, [id, type]);
+  }, [fetchComments]);
 
-  // comments 변경 후 댓글이 1개 이상일 때만 요약함
   useEffect(() => {
     const fetchSummary = async () => {
       if (type !== "policy" || !id || !metadata?.plcyNm) return;
@@ -111,11 +112,7 @@ function CommentsSection({ type, id, metadata }) {
           "/youth/policies/replies/summary",
           { params }
         );
-        if (
-          response.data &&
-          response.data.isSuccess &&
-          response.data.result?.summary
-        ) {
+        if (response.data?.isSuccess && response.data.result?.summary) {
           setSummary(response.data.result.summary);
         }
       } catch (err) {
@@ -129,16 +126,15 @@ function CommentsSection({ type, id, metadata }) {
     if (comments.length > 0) {
       fetchSummary();
     }
-  }, [comments, id, type, metadata]);
+  }, [comments.length, id, type, metadata]);
 
-  // 댓글 제출 핸들러
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!newComment.trim()) return;
     try {
-      let url = "";
-      let requestBody = {};
-      let config = {};
+      let url = "",
+        requestBody = {},
+        config = {};
       if (type === "policy") {
         url = "/youth/policies/create";
         requestBody = {
@@ -154,7 +150,7 @@ function CommentsSection({ type, id, metadata }) {
       }
       await axiosInstance.post(url, requestBody, config);
       setNewComment("");
-      fetchComments(); // 댓글 목록 다시 불러오기
+      fetchComments();
     } catch (err) {
       console.error("댓글 등록 실패:", err);
       if (err.response?.status === 401 || err.response?.status === 403) {
@@ -168,29 +164,57 @@ function CommentsSection({ type, id, metadata }) {
   const handleLikeToggle = async (commentId) => {
     try {
       let toggleUrl = "";
+      let getCountUrl = "";
+
       if (type === "policy") {
         toggleUrl = `/youth/policies/replies/${commentId}/like`;
+        getCountUrl = `/youth/policies/replies/${commentId}/likes`;
       } else if (type === "post") {
         toggleUrl = `/posts/replies/${commentId}/like`;
+        getCountUrl = `/posts/replies/${commentId}/like-count`;
+      } else {
+        throw new Error("유효하지 않은 타입입니다.");
       }
-      await axiosInstance.post(toggleUrl);
-      fetchComments(); // 좋아요 후 댓글 목록 전체를 다시 불러와서 좋아요 수 업데이트
+
+      const toggleResponse = await axiosInstance.post(toggleUrl);
+
+      if (toggleResponse.data && toggleResponse.data.isSuccess) {
+        const countResponse = await axiosInstance.get(getCountUrl);
+        if (countResponse.data && countResponse.data.isSuccess) {
+          const newLikeCount = countResponse.data.result;
+
+          setComments((currentComments) =>
+            currentComments.map((comment) => {
+              const currentCommentId = comment.id || comment.replyId;
+              if (currentCommentId === commentId) {
+                return { ...comment, likeCount: newLikeCount };
+              }
+              return comment;
+            })
+          );
+        }
+      } else {
+        throw new Error(
+          toggleResponse.data.message || "좋아요 처리에 실패했습니다."
+        );
+      }
     } catch (err) {
-      console.error("좋아요 처리 실패:", err.response);
+      console.error("좋아요 처리 실패:", err);
       if (err.response?.status === 401 || err.response?.status === 403) {
         setIsModalOpen(true);
       } else {
-        alert("좋아요 처리에 실패했습니다. 잠시 후 다시 시도해주세요.");
+        alert(
+          err.message ||
+            "좋아요 처리에 실패했습니다. 잠시 후 다시 시도해주세요."
+        );
       }
     }
   };
 
-  // 댓글 삭제 핸들러 (API 연동 필요)
   const handleCommentDelete = async (commentId) => {
     alert("삭제 API 연동 필요");
   };
 
-  // 댓글 수정 핸들러 (API 연동 필요)
   const handleCommentUpdate = async (commentId, currentContent) => {
     alert("수정 API 연동 필요");
   };
