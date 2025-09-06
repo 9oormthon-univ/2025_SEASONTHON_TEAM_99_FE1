@@ -1,0 +1,50 @@
+.monthlySection {
+  margin-bottom: 40px;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.monthTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.noReports {
+  text-align: center;
+  padding: 50px;
+  font-size: 16px;
+  color: #868e96;
+}
+.gridContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+
+.arrowButton {
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrowButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.scrollMenuContainer {
+  overflow: hidden; /* 내부의 스크롤 메뉴가 삐져나가는 것을 방지 (필수!) */
+}
+
+:global(.react-horizontal-scrolling-menu--scroll-container::-webkit-scrollbar) {
+  display: none;
+}
+:global(.react-horizontal-scrolling-menu--scroll-container) {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

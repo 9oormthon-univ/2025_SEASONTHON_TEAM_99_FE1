@@ -1,0 +1,57 @@
+.reportItem {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-self: stretch;
+  flex-shrink: 0; /* 스크롤 시 아이템이 찌그러지지 않도록 설정 */
+  height: 400px; /* 아이템 높이 고정 */
+  width: 230px;
+  padding: 0 120px;
+  border-radius: 8px;
+  border: 1px solid var(--Line-Regular_Color, #e5e5ec);
+  background: linear-gradient(180deg, #fff 0%, #f7f7fb 100%);
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.reportItem:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.logoContainer {
+  width: 100%;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.logoContainer img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.regionName {
+  color: var(--Font-02_black, #111);
+  font-family: Pretendard;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px; /* 100% */
+  letter-spacing: -0.6px;
+  margin-bottom: 8px;
+}
+
+.publishDate {
+  color: var(--Font-04_Gray, #767676);
+  font-family: Pretendard;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px; /* 111.111% */
+  letter-spacing: -0.45px;
+}
