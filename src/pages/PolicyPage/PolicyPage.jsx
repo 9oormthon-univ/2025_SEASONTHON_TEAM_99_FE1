@@ -17,11 +17,13 @@ function PolicyPage() {
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [policies, setPolicies] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const pageSize = 50;
+  // 백엔드에서 한 번에 가져올 개수 (최대치로 설정)
+  const backendPageSize = 150;
+  // 프론트에서 보여줄 개수
+  const frontendPageSize = 10;
 
   useEffect(() => {
     const fetchPolicies = async () => {
@@ -32,26 +34,24 @@ function PolicyPage() {
         let response;
 
         if (filters.sort === "좋아요순") {
-          const params = {
-            pageNum: currentPage,
-            pageSize: pageSize,
-          };
           response = await axiosInstance.get("/youth/policies/likes", {
-            params,
+            params: {
+              pageNum: 1,
+              pageSize: backendPageSize,
+            },
           });
         } else {
           const params = {
             plcyNm: filters.plcyNm,
             categories: filters.categories,
             regions: filters.regions,
-            pageNum: currentPage,
-            pageSize: pageSize,
+            pageNum: 1, // 항상 첫 페이지만 호출
+            pageSize: backendPageSize,
           };
 
           response = await axiosInstance.get("/youth/policies/search", {
             params,
             paramsSerializer: (params) => {
-              // qs.stringify를 사용하여 배열을 'key=value1&key=value2' 형식으로 변환
               return qs.stringify(params, { arrayFormat: "repeat" });
             },
           });
@@ -59,31 +59,41 @@ function PolicyPage() {
 
         if (response.data && response.data.isSuccess && response.data.result) {
           setPolicies(response.data.result.policies);
+          setCurrentPage(1); // 필터 바뀌면 첫 페이지로
         } else {
           throw new Error(
             response.data.message || "데이터를 불러오는 데 실패했습니다."
           );
         }
       } catch (e) {
-        if (e.response && e.response.data?.statusCode === "POLICY_4001") {
-          setError(new Error("존재하지 않는 정책입니다."));
-          setPolicies([]);
-          setTotalCount(0);
-        } else {
-          setError(new Error("데이터를 불러오는 중 오류가 발생했습니다."));
-        }
+        setError(new Error("데이터를 불러오는 중 오류가 발생했습니다."));
       } finally {
         setLoading(false);
       }
     };
 
     fetchPolicies();
-  }, [filters, currentPage]);
+  }, [filters]);
 
-  // 모든 핸들러 함수를 useCallback으로 감싸서 불필요한 재생성을 방지
+  // 현재 페이지에 보여줄 데이터
+  const startIndex = (currentPage - 1) * frontendPageSize;
+  const currentPolicies = policies.slice(
+    startIndex,
+    startIndex + frontendPageSize
+  );
+
+  // 총 페이지 수
+  const totalPages = Math.ceil(policies.length / frontendPageSize);
+
+  // 페이징 블록 (한 번에 10페이지씩)
+  const blockSize = 10;
+  const currentBlock = Math.floor((currentPage - 1) / blockSize);
+  const blockStart = currentBlock * blockSize + 1;
+  const blockEnd = Math.min(blockStart + blockSize - 1, totalPages);
+
+  // 🔹 핸들러들
   const handleSearchChange = useCallback((searchTerm) => {
     setFilters((prev) => ({ ...prev, plcyNm: searchTerm }));
-    setCurrentPage(1);
   }, []);
 
   const handleCategoryChange = useCallback((category) => {
@@ -93,7 +103,6 @@ function PolicyPage() {
         : [...prev.categories, category];
       return { ...prev, categories: newCategories };
     });
-    setCurrentPage(1);
   }, []);
 
   const handleRegionChange = useCallback((regionName) => {
@@ -101,28 +110,15 @@ function PolicyPage() {
       ...prev,
       regions: regionName === "전체지역" ? [] : [regionName],
     }));
-    setCurrentPage(1);
   }, []);
 
   const handleSortChange = useCallback((sort) => {
     setFilters((prev) => ({ ...prev, sort }));
-    setCurrentPage(1);
   }, []);
 
   const handleReset = useCallback(() => {
     setFilters(INITIAL_FILTERS);
-    setCurrentPage(1);
   }, []);
-
-  const handleNextPage = () => {
-    setCurrentPage(currentPage + 1); //total 몰라서 그냥 실행
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
 
   return (
     <div className={styles.policyPage}>
@@ -152,19 +148,58 @@ function PolicyPage() {
       ) : error ? (
         <p>{error.message}</p>
       ) : (
-        <PolicyList
-          policies={policies}
-          activeSort={filters.sort}
-          onSortChange={handleSortChange}
-        />
-      )}
+        <>
+          <PolicyList
+            policies={currentPolicies}
+            activeSort={filters.sort}
+            onSortChange={handleSortChange}
+          />
 
-      <div className={styles.pagenation}>
-        <button onClick={handlePrevPage} disabled={currentPage === 1}>
-          {"<"}
-        </button>
-        <button onClick={handleNextPage}>{">"}</button>
-      </div>
+          {/* 페이지네이션 */}
+          <div className={styles.pagination}>
+            <button
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
+            >
+              {"<<"}
+            </button>
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              {"<"}
+            </button>
+
+            {Array.from(
+              { length: blockEnd - blockStart + 1 },
+              (_, i) => blockStart + i
+            ).map((page) => (
+              <button
+                key={page}
+                className={page === currentPage ? styles.activePage : ""}
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              onClick={() =>
+                setCurrentPage((p) => Math.min(p + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+            >
+              {">"}
+            </button>
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+            >
+              {">>"}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
