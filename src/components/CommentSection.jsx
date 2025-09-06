@@ -150,6 +150,7 @@ function CommentsSection({ type, id, metadata }) {
         );
       }
     } catch (err) {
+      //좋아요 처리
       console.error("좋아요 처리 실패:", err.response);
     }
   };

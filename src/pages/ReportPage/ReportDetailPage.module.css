@@ -10,7 +10,7 @@
 }
 .mainContent {
   width: 100%;
-  padding-top: 132px;
+  padding-top: 0px;
   /* TODO : 정확하게 계산할 것 */
   display: flex;
   flex-direction: column;
