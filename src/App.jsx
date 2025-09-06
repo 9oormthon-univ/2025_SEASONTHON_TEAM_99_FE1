@@ -2,7 +2,6 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css"; // CSS 모듈 import
 
-// 공통 및 페이지 컴포넌트들
 import Header from "./components/Header";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import SignupPage from "./pages/SignupPage/SignupPage";
@@ -16,10 +15,8 @@ import ReportDetailPage from "./pages/ReportPage/ReportDetailPage";
 function App() {
   return (
     <div className="App">
-      {/* Header는 모든 페이지에 공통으로 적용됩니다. */}
       <Header />
 
-      {/* 페이지 내용이 들어갈 main 영역입니다. */}
       <main className="mainContent">
         <Routes>
           <Route path="/login" element={<LoginPage />} />

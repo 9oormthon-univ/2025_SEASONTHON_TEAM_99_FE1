@@ -28,13 +28,6 @@
 .reportListSection {
   display: flex;
   flex-direction: column;
-
-  /* ★★★★★ 핵심 코드 ★★★★★ 
-    이 속성은 Flexbox 자식 요소가 내부 콘텐츠(ScrollMenu)의 크기 때문에 
-    부모 너비를 넘어서는 것을 방지합니다. 
-    '너의 내용물이 아무리 커도, 부모가 정해준 너비보다 작아질 수 있다'고
-    알려주는 매우 중요한 속성입니다.
-  */
   min-width: 0;
 }
 .reportContainer h2 {

@@ -52,37 +52,39 @@ function ReportDetailPage() {
       <div className={styles.statusMessage}>레포트를 찾을 수 없습니다.</div>
     );
 
-  // API 응답 데이터를 조합하여 제목과 날짜를 만듭니다.
-  const reportTitle = `${report.year}년 ${report.month}월 ${report.regionName} 월간 레포트`;
-  // month가 한 자리 수일 경우(예: 9) 앞에 0을 붙여 "09"로 만듭니다.
-  const formattedDate = `${report.year}.${String(report.month).padStart(
-    2,
-    "0"
-  )}`;
+  // 발행일 파싱
+  const formattedDate = report.createdAt.split("T")[0].replaceAll("-", ".");
+  // 제목 생성
+  const reportTitle = `${report.year}년 ${report.month}월 월간 레포트`;
 
   return (
     <div className={styles.pageContainer}>
       <div className={styles.mainContent}>
-        <div className={styles.reportDetail}>
-          <div className={styles.titleSection}>
+        <div className={styles.policydetail}>
+          <div className={styles.title}>
             <h1>{reportTitle}</h1>
             <div className={styles.titleMeta}>
               <div className={styles.location}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
+                  width="21"
+                  height="21"
+                  viewBox="0 0 20 21"
                   fill="none"
                 >
                   <path
-                    d="M10 16.6668C12.5 14.0002 15 11.6123 15 8.66683C15 5.72131 12.7614 3.3335 10 3.3335C7.23858 3.3335 5 5.72131 5 8.66683C5 11.6123 7.5 14.0002 10 16.6668Z"
-                    stroke="#333"
-                    strokeWidth="1.66667"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    d="M9.99219 17.1673C12.4922 14.5006 14.9922 12.1128 14.9922 9.16732C14.9922 6.2218 12.7536 3.83398 9.99219 3.83398C7.23076 3.83398 4.99219 6.2218 4.99219 9.16732C4.99219 12.1128 7.49219 14.5006 9.99219 17.1673Z"
+                    stroke="#F5F5F5"
+                    stroke-width="1.66667"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
                   />
-                  <circle cx="9.99992" cy="8.33317" r="1.66667" fill="#333" />
+                  <circle
+                    cx="9.99235"
+                    cy="8.83268"
+                    r="1.66667"
+                    fill="#F5F5F5"
+                  />
                 </svg>
                 <span>{report.regionName}</span>
               </div>
@@ -96,6 +98,7 @@ function ReportDetailPage() {
           </div>
         </div>
       </div>
+      <hr />
     </div>
   );
 }

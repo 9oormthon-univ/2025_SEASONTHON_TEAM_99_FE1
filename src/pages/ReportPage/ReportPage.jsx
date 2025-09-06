@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./ReportPage.module.css";
 import CustomDropdown from "../../components/CustomDropdown";
 import refreshIconUrl from "../../assets/redirect.svg";
-import ReportList from "./ReportList"; // ReportList 컴포넌트를 사용합니다.
+import ReportList from "./ReportList";
 import axiosInstance from "../../api/axiosInstance";
 
 const REGION_OPTIONS = [
@@ -76,39 +76,28 @@ function ReportPage() {
     <div className={styles.policyPage}>
       <div className={styles.policyCard}>
         <div className={styles.policyDisc}>
-                    <p className={styles.title}>월간 레포트</p>         {" "}
+          <p className={styles.title}>월간 레포트</p>
           <div className={styles.policyOptionBar}>
-                       {" "}
             <p className={styles.subTitle}>
-                            지역별 청년들의 다양한 목소리를 한눈에 확인하세요  
-                       {" "}
+              지역별 청년들의 다양한 목소리를 한눈에 확인하세요
             </p>
-                       {" "}
             <div className={styles.selection}>
-                           {" "}
               <div className={styles.dropdownContainer}>
-                               {" "}
                 <CustomDropdown
                   options={REGION_OPTIONS}
                   currentRegion={filters.region}
                   onRegionChange={handleRegionChange}
                 />
-                             {" "}
               </div>
-                           {" "}
               <button
                 className={styles.resetButton}
                 aria-label="필터 초기화"
                 onClick={handleReset}
               >
-                                <img src={refreshIconUrl} alt="필터 초기화" /> 
-                           {" "}
+                <img src={refreshIconUrl} alt="필터 초기화" />
               </button>
-                         {" "}
             </div>
-                     {" "}
           </div>
-                 {" "}
         </div>
       </div>
       <div className={styles.reportListSection}>

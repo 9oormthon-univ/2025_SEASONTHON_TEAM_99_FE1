@@ -125,12 +125,12 @@
 }
 
 .section > p {
-  line-height: 1.7;
-  color: #333;
-  margin: 0;
-  background: #f9f9f9;
-  border-radius: 8px;
-  text-align: left;
+  color: var(--Font-03_Gray, #505050);
+  font-family: Pretendard;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 27px */
 }
 
 /* 그리드 컨테이너 */
@@ -283,6 +283,9 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
+.detailCardContent hr {
+  width: 100%;
 }
 .detailCardContent p {
   margin: 0;
