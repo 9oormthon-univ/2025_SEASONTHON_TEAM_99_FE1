@@ -263,3 +263,35 @@
   color: #868e96;
   padding: 40px 0;
 }
+
+.pagination {
+  display: flex;
+  justify-content: center; /* 가로 중앙 정렬 */
+  align-items: center;
+  gap: 12px; /* 버튼 간격 */
+  margin: 32px auto 0 auto; /* 위는 32px, 좌우 auto → 가운데 정렬 */
+  width: fit-content; /* 내용만큼만 차지 */
+}
+
+.pagination button {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.pagination button:hover {
+  color: #000;
+}
+
+.pagination button:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.activePage {
+  font-weight: bold;
+  color: #000;
+}

@@ -53,3 +53,29 @@
     gap: 44px;
   }
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 20px 0;
+}
+
+.pagination button {
+  border: none;
+  background: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  color: #666;
+  font-size: 14px;
+}
+
+.pagination button.active {
+  font-weight: bold;
+  color: black;
+}
+
+.pagination button:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
