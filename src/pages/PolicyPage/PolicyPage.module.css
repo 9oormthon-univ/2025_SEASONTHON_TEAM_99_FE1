@@ -56,9 +56,12 @@
 
 .pagination {
   display: flex;
+  width: 100%;
   justify-content: center;
   gap: 6px;
   margin: 20px 0;
+  overflow: hidden;
+  flex-wrap: wrap;
 }
 
 .pagination button {
