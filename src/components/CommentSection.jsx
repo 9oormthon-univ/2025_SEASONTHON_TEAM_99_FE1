@@ -4,13 +4,13 @@ import axiosInstance from "../api/axiosInstance";
 import styles from "./CommentSection.module.css";
 import heartIconUrl from "../assets/heart.svg";
 import fullHeartIconUrl from "../assets/fullheart.svg";
+import LoginModal from "./LoginModal";
 
 function CommentItem({ comment, onLikeToggle, onUpdate, onDelete }) {
   const { user } = useAuth();
   const authorName = comment.writer;
   const isMyComment = user && user.nickname === authorName;
   const commentId = comment.id || comment.replyId;
-
   const likeCount = comment.likeCount;
 
   return (
@@ -27,7 +27,7 @@ function CommentItem({ comment, onLikeToggle, onUpdate, onDelete }) {
           )}
         </div>
         <div className={styles.commentItemSub}>
-          <button disabled={!user} onClick={() => onLikeToggle(commentId)}>
+          <button onClick={() => onLikeToggle(commentId)}>
             <img
               src={likeCount > 0 ? fullHeartIconUrl : heartIconUrl}
               alt="좋아요"
@@ -60,36 +60,78 @@ function CommentsSection({ type, id, metadata }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchComments = async () => {
-    if (!id) return;
-    try {
-      setLoading(true);
-      setError(null);
-      let response;
-      if (type === "policy") {
-        response = await axiosInstance.get("/youth/policies/reply-list", {
-          params: { plcyNo: id },
-        });
-      } else if (type === "post") {
-        response = await axiosInstance.get(`/posts/replies/${id}`);
-      } else {
-        throw new Error("유효하지 않은 댓글 타입입니다.");
-      }
-      if (response.data && response.data.isSuccess) {
-        setComments(response.data.result || []);
-      }
-    } catch (err) {
-      console.error("댓글 로딩 실패:", err);
-      setError("댓글을 불러오는 중 오류가 발생했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [summary, setSummary] = useState("");
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryError, setSummaryError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
+    const fetchComments = async () => {
+      if (!id) return;
+      try {
+        setLoading(true);
+        setError(null);
+        let response;
+        if (type === "policy") {
+          response = await axiosInstance.get("/youth/policies/reply-list", {
+            params: { plcyNo: id },
+          });
+        } else if (type === "post") {
+          response = await axiosInstance.get(`/posts/replies/${id}`);
+        }
+        if (response?.data?.isSuccess) {
+          setComments(response.data.result || []);
+        } else {
+          setComments([]);
+        }
+      } catch (err) {
+        console.error("댓글 로딩 실패:", err);
+        setError("댓글을 불러오는 중 오류가 발생했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchComments();
+    return () => {
+      setSummary("");
+      setSummaryError(null);
+    };
   }, [id, type]);
 
+  // comments 변경 후 댓글이 1개 이상일 때만 요약함
+  useEffect(() => {
+    const fetchSummary = async () => {
+      if (type !== "policy" || !id || !metadata?.plcyNm) return;
+      setSummaryLoading(true);
+      setSummaryError(null);
+      try {
+        const params = { plcyNo: id, plcyNm: metadata.plcyNm };
+        const response = await axiosInstance.get(
+          "/youth/policies/replies/summary",
+          { params }
+        );
+        if (
+          response.data &&
+          response.data.isSuccess &&
+          response.data.result?.summary
+        ) {
+          setSummary(response.data.result.summary);
+        }
+      } catch (err) {
+        console.error("AI 요약 로딩 실패:", err);
+        setSummaryError("AI 요약 정보를 불러오는 데 실패했습니다.");
+      } finally {
+        setSummaryLoading(false);
+      }
+    };
+
+    if (comments.length > 0) {
+      fetchSummary();
+    }
+  }, [comments, id, type, metadata]);
+
+  // 댓글 제출 핸들러
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!newComment.trim()) return;
@@ -109,55 +151,46 @@ function CommentsSection({ type, id, metadata }) {
         url = `/posts/replies/${id}`;
         requestBody = { content: newComment };
         config = { params: { isAnonymous } };
-      } else {
-        throw new Error("유효하지 않은 댓글 타입입니다.");
       }
       await axiosInstance.post(url, requestBody, config);
       setNewComment("");
-      setIsAnonymous(false);
-      fetchComments();
+      fetchComments(); // 댓글 목록 다시 불러오기
     } catch (err) {
       console.error("댓글 등록 실패:", err);
-      alert(err.response?.data?.message || "댓글 등록에 실패했습니다.");
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        setIsModalOpen(true);
+      } else {
+        alert(err.response?.data?.message || "댓글 등록에 실패했습니다.");
+      }
     }
   };
 
   const handleLikeToggle = async (commentId) => {
     try {
       let toggleUrl = "";
-      let getCountUrl = "";
       if (type === "policy") {
         toggleUrl = `/youth/policies/replies/${commentId}/like`;
-        getCountUrl = `/youth/policies/replies/${commentId}/likes`;
       } else if (type === "post") {
         toggleUrl = `/posts/replies/${commentId}/like`;
-        getCountUrl = `/posts/replies/${commentId}/like-count`;
-      } else {
-        throw new Error("유효하지 않은 댓글 타입입니다.");
       }
       await axiosInstance.post(toggleUrl);
-      const response = await axiosInstance.get(getCountUrl);
-      if (response.data && response.data.isSuccess) {
-        const newLikeCount = response.data.result;
-        setComments((currentComments) =>
-          currentComments.map((comment) => {
-            const currentCommentId = comment.id || comment.replyId;
-            if (currentCommentId === commentId) {
-              return { ...comment, likeCount: newLikeCount };
-            }
-            return comment;
-          })
-        );
-      }
+      fetchComments(); // 좋아요 후 댓글 목록 전체를 다시 불러와서 좋아요 수 업데이트
     } catch (err) {
-      //좋아요 처리
       console.error("좋아요 처리 실패:", err.response);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        setIsModalOpen(true);
+      } else {
+        alert("좋아요 처리에 실패했습니다. 잠시 후 다시 시도해주세요.");
+      }
     }
   };
 
+  // 댓글 삭제 핸들러 (API 연동 필요)
   const handleCommentDelete = async (commentId) => {
     alert("삭제 API 연동 필요");
   };
+
+  // 댓글 수정 핸들러 (API 연동 필요)
   const handleCommentUpdate = async (commentId, currentContent) => {
     alert("수정 API 연동 필요");
   };
@@ -179,6 +212,7 @@ function CommentsSection({ type, id, metadata }) {
         </svg>
         댓글 ({comments.length})
       </h2>
+
       <div className={styles.commentFormArea}>
         {user ? (
           <form onSubmit={handleCommentSubmit}>
@@ -226,31 +260,7 @@ function CommentsSection({ type, id, metadata }) {
                   익명
                 </label>
               </div>
-              <button type="submit">
-                작성하기
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                >
-                  <path
-                    d="M4.10156 8.83333L17.4349 3.83334L12.4349 17.1667L9.9349 11.3333L4.10156 8.83333Z"
-                    stroke="white"
-                    stroke-width="1.66667"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M9.92969 11.3333L17.4297 3.83334"
-                    stroke="white"
-                    stroke-width="1.66667"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </button>
+              <button type="submit">작성하기</button>
             </div>
           </form>
         ) : (
@@ -259,29 +269,46 @@ function CommentsSection({ type, id, metadata }) {
           </p>
         )}
       </div>
-      {comments.length > 0 && (
+      {type === "policy" && comments.length > 0 && (
         <div className={styles.commentSummary}>
-          <h3>댓글 한눈에</h3>
-          댓글 요약 자리
+          {summaryLoading && (
+            <p className={styles.summaryStatus}>댓글 요약 중...</p>
+          )}
+          {summaryError && (
+            <p className={`${styles.summaryStatus} ${styles.errorText}`}>
+              {summaryError}
+            </p>
+          )}
+          {!summaryLoading && !summaryError && summary && (
+            <>
+              <h3>댓글 한눈에</h3>
+              <p className={styles.commentSummaryContent}>{`" ${summary} "`}</p>
+            </>
+          )}
         </div>
       )}
+
       <div>
         {loading && <p>로딩 중...</p>}
         {error && <p style={{ color: "red" }}>{error}</p>}
         {!loading &&
           !error &&
-          (comments.length > 0
-            ? comments.map((comment) => (
-                <CommentItem
-                  key={comment.id || comment.replyId}
-                  comment={comment}
-                  onLikeToggle={handleLikeToggle}
-                  onDelete={handleCommentDelete}
-                  onUpdate={handleCommentUpdate}
-                />
-              ))
-            : "")}
+          (comments.length > 0 ? (
+            comments.map((comment) => (
+              <CommentItem
+                key={comment.id || comment.replyId}
+                comment={comment}
+                onLikeToggle={handleLikeToggle}
+                onDelete={handleCommentDelete}
+                onUpdate={handleCommentUpdate}
+              />
+            ))
+          ) : (
+            <p className={styles.noComments}>아직 댓글이 없습니다.</p>
+          ))}
       </div>
+
+      <LoginModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );
 }
