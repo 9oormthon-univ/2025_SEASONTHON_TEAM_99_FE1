@@ -39,7 +39,7 @@ function NewPostPage() {
   const [isAnonymous, setIsAnonymous] = useState(true);
 
   // 단일 파일에서 파일 배열로 상태 변경
-  const [imageFiles, setImageFiles] = useState([]);
+  const [imageFile, setImageFile] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const fileInputRef = useRef(null);
 
@@ -60,22 +60,22 @@ function NewPostPage() {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    if (imageFiles.length + files.length > MAX_IMAGES) {
+    if (imageFile.length + files.length > MAX_IMAGES) {
       alert(`사진은 최대 ${MAX_IMAGES}장까지 추가할 수 있습니다.`);
       return;
     }
 
-    const newImageFiles = [...imageFiles, ...files];
-    const newImagePreviews = newImageFiles.map((file) =>
+    const newImageFile = [...imageFile, ...files];
+    const newImagePreviews = newImageFile.map((file) =>
       URL.createObjectURL(file)
     );
 
-    setImageFiles(newImageFiles);
+    setImageFile(newImageFile);
     setImagePreviews(newImagePreviews);
   };
 
   const removeImage = (indexToRemove) => {
-    setImageFiles((prev) => prev.filter((_, index) => index !== indexToRemove));
+    setImageFile((prev) => prev.filter((_, index) => index !== indexToRemove));
     setImagePreviews((prev) =>
       prev.filter((_, index) => index !== indexToRemove)
     );
@@ -102,9 +102,9 @@ function NewPostPage() {
     formData.append("regionId", regionId);
     formData.append("isAnonymous", isAnonymous);
 
-    if (imageFiles.length > 0) {
-      imageFiles.forEach((file) => {
-        formData.append("imageFiles", file);
+    if (imageFile.length > 0) {
+      imageFile.forEach((file) => {
+        formData.append("imageFile", file);
       });
     }
 
@@ -112,8 +112,7 @@ function NewPostPage() {
       const response = await axiosInstance.post("/posts/new", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      const newPostId = response.data.result.postId;
-      navigate(`/community/${newPostId}`);
+      navigate("/community");
     } catch (error) {
       console.error("게시글 작성 실패:", error);
       const message =
@@ -201,7 +200,7 @@ function NewPostPage() {
             ))}
 
             {/* 이미지가 3장 미만일 때만 업로드 버튼 표시 */}
-            {imageFiles.length < MAX_IMAGES && (
+            {imageFile.length < MAX_IMAGES && (
               <button
                 type="button"
                 onClick={handleImageUploadClick}
@@ -241,7 +240,7 @@ function NewPostPage() {
                 </svg>
                 <span>
                   사진 추가하기
-                  <br />({imageFiles.length}/{MAX_IMAGES})
+                  <br />({imageFile.length}/{MAX_IMAGES})
                 </span>
               </button>
             )}
