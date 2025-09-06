@@ -103,7 +103,9 @@
   border: none;
   cursor: pointer;
 }
-
+.commentItemContent {
+  margin: 0;
+}
 .commentItem {
   width: 100%;
   display: flex;
@@ -115,12 +117,15 @@
   margin-top: 16px;
   box-sizing: border-box;
 }
-
+.commentSummaryContent {
+  text-align: left;
+  white-space: pre-wrap;
+}
 .commentItemArea {
   display: flex;
   justify-content: space-between;
   flex-direction: row;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .commentItemInfo {
@@ -211,7 +216,6 @@ h2 {
   cursor: pointer;
 }
 
-/* 사용자가 클릭할 영역이자, 텍스트와 가짜 체크박스를 포함하는 label */
 .customCheckboxLabel {
   display: flex;
   align-items: center;
