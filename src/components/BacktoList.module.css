@@ -1,10 +1,15 @@
 .backLink {
+  margin-top: 40px;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit; /* 부모 요소의 폰트 스타일 상속 */
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
   padding: 28px 0;
-  border-bottom: 1.5px solid #e5e5ec;
+  /* border-bottom: 1.5px solid #e5e5ec; */
 
   color: #000;
   font-size: 18px;
@@ -22,4 +27,10 @@
 .icon {
   width: 24px;
   height: 24px;
+}
+
+@media (max-width: 768px) {
+  .backLink {
+    margin-top: 80px;
+  }
 }

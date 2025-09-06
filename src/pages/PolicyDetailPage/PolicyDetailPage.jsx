@@ -176,14 +176,16 @@ function PolicyDetailPage() {
               </div>
             </div>
           </div>
-          <a
-            href={policy.aplyUrlAddr}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.applyButton}
-          >
-            신청하기
-          </a>
+          {policy.aplyUrlAddr && policy.aplyUrlAddr.trim() !== "" && (
+            <a
+              href={policy.aplyUrlAddr}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.applyButton}
+            >
+              신청하기
+            </a>
+          )}
         </section>
         <hr />
         <section className={styles.section}>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import "./App.css"; // CSS 모듈 import
 
 import Header from "./components/Header";
@@ -12,11 +12,16 @@ import CommunityList from "./pages/CommunityPage/CommunityPage";
 import NewPost from "./pages/CommunityPage/NewPost";
 import PostDetail from "./pages/CommunityPage/PostDetail";
 import ReportDetailPage from "./pages/ReportPage/ReportDetailPage";
+import BackToList from "./components/BacktoList";
 function App() {
+  const location = useLocation();
+  const { pathname } = location;
+  const isDetailPage = /^\/(report|policy|community)\/.+/.test(pathname);
+
   return (
     <div className="App">
       <Header />
-
+      {isDetailPage && <BackToList />}
       <main className="mainContent">
         <Routes>
           <Route path="/login" element={<LoginPage />} />
