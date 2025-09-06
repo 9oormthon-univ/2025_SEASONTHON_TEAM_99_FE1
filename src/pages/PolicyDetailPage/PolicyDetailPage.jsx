@@ -150,7 +150,11 @@ function PolicyDetailPage() {
       </div>
     );
   }
-
+  // 정책 신청하기 새 탭 링크
+  let fullApplyUrl = policy.aplyUrlAddr;
+  if (fullApplyUrl && !/^https?:\/\//i.test(fullApplyUrl)) {
+    fullApplyUrl = `https://${fullApplyUrl}`;
+  }
   return (
     <div className={styles.pageContainer}>
       <header className={styles.header}>
@@ -178,7 +182,7 @@ function PolicyDetailPage() {
           </div>
           {policy.aplyUrlAddr && policy.aplyUrlAddr.trim() !== "" && (
             <a
-              href={policy.aplyUrlAddr}
+              href={fullApplyUrl}
               target="_blank"
               rel="noopener noreferrer"
               className={styles.applyButton}
