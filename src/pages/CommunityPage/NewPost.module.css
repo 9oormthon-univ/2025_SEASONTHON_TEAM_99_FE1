@@ -5,7 +5,7 @@
   justify-content: center;
   align-items: flex-start;
   gap: 64px;
-  padding-top: 132px; /*web Header 80px, figma 80px인데 시작점이 폰트부터라서 대강*/
+  padding-top: 30px;
 }
 
 .formContainer {
@@ -17,84 +17,62 @@
 
 .inputGroup {
   width: 100%;
-
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
+
 .label {
   margin-bottom: 14px;
-  color: var(--Font-02_black, #111);
-
-  /* PC/Headline/KR/H5_KR_Sb */
+  color: #111;
   font-family: Pretendard;
   font-size: 24px;
-  font-style: normal;
   font-weight: 600;
-  line-height: 34px; /* 141.667% */
+  line-height: 34px;
   letter-spacing: -0.6px;
 }
 
 .input {
   width: 100%;
-
-  box-sizing: border-box;
   padding: 16px;
   border-radius: 8px;
-  border: 1px solid var(--Line-Regular_Color, #e5e5ec);
-  background: var(--Font-01_White, #fff);
+  border: 1px solid #e5e5ec;
+  background: #fff;
 }
 
 textarea {
   width: 100%;
-  box-sizing: border-box;
   padding: 16px;
   border-radius: 8px;
-  border: 1px solid var(--Line-Regular_Color, #e5e5ec);
-  background: var(--Font-01_White, #fff);
+  border: 1px solid #e5e5ec;
+  background: #fff;
   height: 420px;
-  overflow: hidden;
-  color: #111;
-  text-overflow: ellipsis;
-  font-family: Pretendard;
   font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 24px; /* 150% */
+  font-family: Pretendard;
+  line-height: 24px;
   letter-spacing: -0.4px;
+  color: #111;
 }
 
 .dropdownContainer {
   width: 200px;
 }
 
+.imageSection {
+  width: 100%;
+}
+
 .imageUploadButton {
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
   height: 200px;
-  color: #868e96;
   border-radius: 8px;
-  border: 2.5px dashed var(--Line-Regular_Color, #e5e5ec);
-  text-align: center;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  color: var(--Font-05_Gray_Disabled, #999);
-  text-overflow: ellipsis;
-  font-family: Pretendard;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 24px; /* 150% */
-  letter-spacing: -0.4px;
+  border: 2.5px dashed #e5e5ec;
+  background: #fff;
+  color: #999;
   cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.imageUploadButton:hover {
-  background-color: #f1f3f5;
 }
 
 .imagePreviewContainer {
@@ -123,49 +101,134 @@ textarea {
   color: white;
   border: none;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  line-height: 1;
 }
 
 .buttonGroup {
   display: flex;
   gap: 12px;
   justify-content: center;
-  align-items: center;
 }
 
 .buttonGroup button {
   padding: 14px 16px;
   border-radius: 8px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  font-family: Pretendard;
   font-size: 18px;
-  font-style: normal;
   font-weight: 600;
-  line-height: 20px; /* 111.111% */
-  letter-spacing: -0.45px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.buttonGroup button:hover {
-  opacity: 0.85;
+  cursor: pointer;
 }
 
 .cancelButton {
   flex: 1;
-  border-radius: 8px;
-  border: 1px solid var(--Line-Regular_Color, #e5e5ec);
+  border: 1px solid #e5e5ec;
 }
 
 .submitButton {
-  border: none;
   flex: 4;
   background-color: #0c1c56;
-  color: #ffffff;
+  color: #fff;
+  border: none;
+}
+
+.voteSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.voteSection h3 {
+  font-size: 20px;
+  font-weight: 100%;
+  color: #111;
+  text-align: left; /* ✅ 왼쪽 정렬 */
+}
+
+/* 추가하기 버튼 */
+.voteAddButton {
+  width: 200px;
+  height: 48px;
+  background-color: #e9e9ee;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #868e96;
+  cursor: pointer;
+}
+
+.voteInput {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #e5e5ec;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 15px;
+  height: 52px;
+}
+
+.voteOptionAdd {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 8px;
+  background-color: #f1f1f5;
+  color: #868e96;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.voteOptions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.voteCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #333;
+}
+
+.voteDateWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #fff;
+}
+
+.voteDateInput {
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+}
+
+/* 투표 취소 버튼 */
+.voteCancelButton {
+  align-self: flex-start; /* ✅ 왼쪽 정렬 */
+  margin-bottom: 12px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background-color: #0c1c56;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.voteDateInput::-webkit-datetime-edit {
+  display: none; /* 기본 "연도-월-일" 글씨 숨김 */
+}
+
+.voteDateInput:focus::-webkit-datetime-edit {
+  display: inline; /* 포커스되면 다시 보이게 */
 }

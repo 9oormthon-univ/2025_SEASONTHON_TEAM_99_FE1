@@ -5,113 +5,157 @@
   display: flex;
   flex-direction: column;
 }
+
 .mainContent {
   width: 100%;
-  padding-top: 0px;
-  /* TODO : 정확하게 계산할 것 */
   display: flex;
   flex-direction: column;
   gap: 48px;
 }
 
 .policydetail {
-  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 28px;
 }
+
 .title {
-  display: flex;
-  max-width: 100%;
   padding: 24px;
-  box-sizing: border-box;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  text-align: left;
   border-radius: 8px;
   background: #0c1c56;
-  color: var(--Font-01_White, #fff);
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 34px; /* 170% */
-  letter-spacing: -0.5px;
-  overflow-wrap: break-word;
-  word-break: break-word;
+  color: #fff;
 }
+
 .title h1 {
-  color: var(--Font-01_White, #fff);
-  font-family: Pretendard;
   font-size: 24px;
-  font-style: normal;
   font-weight: 600;
-  line-height: 34px; /* 141.667% */
-  letter-spacing: -0.6px;
   margin: 0;
 }
+
 .titleMeta {
   display: flex;
   gap: 18px;
   font-size: 16px;
-  flex-basis: auto;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 20px; /* 125% */
-  letter-spacing: -0.4px;
 }
+
 .contentContainer {
-  display: flex;
   padding: 0 24px;
+  display: flex;
   flex-direction: column;
-  box-sizing: border-box;
-  align-items: flex-start;
   gap: 32px;
-  align-self: stretch;
-  word-break: keep-all;
 }
-.location {
-  display: flex;
-  align-items: center;
-  color: #f5f5f5;
-  font-family: Pretendard;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 20px; /* 125% */
-  letter-spacing: -0.4px;
-}
-.date {
-  color: #f5f5f5;
-  font-family: Pretendard;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 150%; /* 24px */
-  letter-spacing: -0.4px;
-}
-.subdisc {
-  display: flex;
-  gap: 18px;
-  color: #f5f5f5;
-  font-size: 15px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 150%; /* 22.5px */
-  letter-spacing: -0.375px;
-}
+
 .content {
   text-align: left;
-  box-sizing: border-box;
   white-space: pre-wrap;
 }
-/* 이미지 리스트 */
-.contentContainer img {
-  max-width: 300px; /* 가로 최대 크기 */
-  max-height: 300px; /* 세로 최대 크기 */
-  width: auto;
-  height: auto;
-  object-fit: contain; /* 원본 비율 유지 */
+
+/* ✅ 투표 제목 (박스 밖, 왼쪽 정렬) */
+.voteTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-align: left;
+  color: #111;
+}
+
+/* 투표 박스 */
+.voteBox {
+  border: 1px solid #ddd;
   border-radius: 8px;
-  margin-right: 12px; /* 이미지 간격 */
+  padding: 20px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.voteQuestion {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  text-align: left;
+}
+
+.voteOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.voteOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  padding: 12px 16px;
+  border: 1px solid #e5e5ec;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+/* ✅ 라디오/체크 버튼 커스텀 */
+.voteInput {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  margin-right: 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+.voteInput:checked {
+  border-color: #0c1c56;
+  background-color: #0c1c56;
+}
+
+.voteInput:checked::after {
+  content: "✔";
+  color: #fff;
+  font-size: 12px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+}
+
+.voteCount {
+  color: #666;
+  font-size: 14px;
+}
+
+/* 버튼 스타일 */
+.voteButton {
+  margin-top: 16px;
+  width: 100%;
+  padding: 14px;
+  background-color: #0c1c56;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.voteButton:hover {
+  background-color: #08123d;
+}
+
+/* 이미지 전용 컨테이너 */
+.imageContainer {
+  display: flex;
+  flex-direction: row;   /* 가로 배치 */
+  gap: 16px;             /* 사진 간격 */
+  margin-top: 12px;      /* 본문과 간격 */
+}
+
+.imageContainer img {
+  width: 200px;        /* 고정 크기 */
+  height: 200px;
+  object-fit: cover;   /* 비율 유지 */
+  border-radius: 8px;
 }
