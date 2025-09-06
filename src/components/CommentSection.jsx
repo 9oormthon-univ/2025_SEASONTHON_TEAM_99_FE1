@@ -188,7 +188,69 @@ function CommentsSection({ type, id, metadata }) {
               placeholder="의견을 남겨주세요."
             />
             <div className={styles.commentExtraArea}>
-              <button type="submit">작성하기</button>
+              <div className={styles.isAnonymous}>
+                <input
+                  id="anonymous-checkbox"
+                  type="checkbox"
+                  className={styles.realCheckbox}
+                  checked={isAnonymous}
+                  onChange={(e) => setIsAnonymous(e.target.checked)}
+                />
+                <label
+                  htmlFor="anonymous-checkbox"
+                  className={styles.customCheckboxLabel}
+                >
+                  <div
+                    className={`${styles.customCheckbox} ${
+                      isAnonymous ? styles.checked : ""
+                    }`}
+                  >
+                    {isAnonymous && (
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M20 6L9 17L4 12"
+                          stroke="#333"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                  익명
+                </label>
+              </div>
+              <button type="submit">
+                작성하기
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                >
+                  <path
+                    d="M4.10156 8.83333L17.4349 3.83334L12.4349 17.1667L9.9349 11.3333L4.10156 8.83333Z"
+                    stroke="white"
+                    stroke-width="1.66667"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M9.92969 11.3333L17.4297 3.83334"
+                    stroke="white"
+                    stroke-width="1.66667"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
             </div>
           </form>
         ) : (
@@ -197,6 +259,12 @@ function CommentsSection({ type, id, metadata }) {
           </p>
         )}
       </div>
+      {comments.length > 0 && (
+        <div className={styles.commentSummary}>
+          <h3>댓글 한눈에</h3>
+          댓글 요약 자리
+        </div>
+      )}
       <div>
         {loading && <p>로딩 중...</p>}
         {error && <p style={{ color: "red" }}>{error}</p>}
