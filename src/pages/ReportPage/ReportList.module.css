@@ -18,27 +18,58 @@
   font-size: 16px;
   color: #868e96;
 }
+
 .gridContainer {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
+  gap: 10px;
 }
 
+/* --- 👇 '디자인 2' 스타일로 변경된 버튼 코드 --- */
+
 .arrowButton {
-  cursor: pointer;
-  font-size: 20px;
+  /* 레이아웃 및 크기 */
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* 디자인 */
+  background-color: transparent; /* 평소에는 투명 */
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
 }
 
+/* 마우스를 올렸을 때 (비활성화 상태가 아닐 때) */
+.arrowButton:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.05); /* 은은한 배경색 표시 */
+}
+
+/* 비활성화 상태일 때 */
 .arrowButton:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
 
+/* 버튼 안의 SVG 아이콘 스타일 */
+.arrowButton svg path {
+  stroke: #888; /* 아이콘 기본 색상 */
+  stroke-width: 2; /* 아이콘 두께 */
+  fill: none; /* 채우기 없음 (선으로만 그림) */
+  transition: stroke 0.2s ease-in-out;
+}
+
+/* 마우스를 올렸을 때 아이콘 색상 변경 */
+.arrowButton:hover:not(:disabled) svg path {
+  stroke: #333;
+}
+
 .scrollMenuContainer {
-  overflow: hidden; /* 내부의 스크롤 메뉴가 삐져나가는 것을 방지 (필수!) */
+  overflow: hidden;
 }
 
 :global(.react-horizontal-scrolling-menu--scroll-container::-webkit-scrollbar) {
